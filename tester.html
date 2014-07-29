@@ -1,0 +1,76 @@
+<!doctype html>
+<head>
+<title>
+PLAY AROUND WITH ANGULARJS
+</title>
+	<script src="jquery-2.0.3.min.js"></script>
+	<script src="jquery.transit.min.js"></script> 
+	<script src = "http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+<style>
+#button {
+	position: absolute;
+	background-color: #F16745;
+	width: 40%;
+	height: 35%;
+	font-size: 300%;
+	text-align: center;
+}
+#question {
+	width: 100%;
+	height: 6%;
+	background-color: #93648D;
+	font-size: 200%;
+	text-align: center;
+	position: absolute;
+}
+</style>
+<script type="text/javascript">
+	var quiz = angular.module('quiz', []);
+	
+	quiz.controller('quizcontroller', function($scope, $http) {
+		$scope.buttons = [
+		{name:'1', x:'4', y:'10', color:'F16745'},
+		{name:'2', x:'56', y:'10', color:'FFC65D'},
+		{name:'3', x:'4', y:'61', color:'7BC8A4'},
+		{name:'4', x:'56', y:'61', color:'4CC3D9'},
+		];
+		
+		$scope.question="HOW BIG IS THE WORLD";
+		
+		var area = "norwich"
+		$http.get('getfoodratings.php?area=' + area).
+		success(function(data, status, headers, config) {
+			$scope.posts = data;
+			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].BusinessName;
+			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].RatingValue;
+		}).
+		error(function(data, status, headers, config) {
+			alert("error: angularJS: $http.get call failed");
+		});
+		
+		$scope.archived = [];
+		
+		$scope.answers = ["small", "large", "tiny", "massive"];
+		$scope.answer = 4;
+		
+		$scope.getanswer = function(index) {
+			return answers[index];
+		};
+		
+		$scope.clicked = function(index) {
+			alert(parseInt(index) === $scope.answer);
+		};
+	});
+</script>
+</head>
+<body ng-app="quiz" ng-controller="quizcontroller"> 
+		<div id="question">
+			{{question}}
+		</div>
+		<header ng-repeat="button in buttons">
+			<div id="button" ng-click="clicked(button.name)" style="top: {{button.y}}%; left: {{button.x}}%; background-color: #{{button.color}}">
+			{{answers[button.name-1]}}
+			</div>
+		</header>
+</body>
+</html>

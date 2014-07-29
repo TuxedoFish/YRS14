@@ -1,0 +1,59 @@
+<!doctype html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="../css/main.css" >  
+	<script src="../library/jquery-2.0.3.min.js"></script>
+	<script src="../library/jquery.transit.min.js"></script> 
+	<script src = "http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+</head>
+
+<script type=text/javascript>
+	var quiz = angular.module('quiz', []);
+	
+	quiz.controller('quizcontroller', function($scope, $http) {
+		$scope.placename = "";
+		$scope.starrating = 0;
+		$scope.imageurl = "";
+		
+		var area = "norwich";
+		$http.get('../php/getfoodratings.php?area=' + area).
+		success(function(data, status, headers, config) {
+			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].BusinessName;
+			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].RatingValue;
+		}).
+		error(function(data, status, headers, config) {
+			alert("error: angularJS: $http.get call failed");
+		});
+		/*
+		$http.get("../php/getimages.php?submit=true&search=xbox").
+		success(function(data1, status, headers, config) {
+			alert(data1.results[0].MediaUrl);
+			//alert($scope.imageurl = data1.d.results[0].MediaUrl);
+		}).
+		error(function(data1, status, headers, config) {
+			alert("error: angularJS: $http.get call failed");
+		}); */
+	});
+</script>
+
+<body>
+	<!--contains the website within a box-->
+	<div id="container" ng-app="quiz" ng-controller="quizcontroller">
+		<!--- <img src=""></img -->
+		<div id="searchbox">
+			<form>
+				<!-- user search bar -->
+				<input class="search" type="text" placeholder="search...">
+				<input class="button" type="button" value="Search">
+			</form>
+		</div>
+		<div id="image_box">
+			<img src="http://blog.educastur.es/stocks/files/2010/12/topdown_xbox.jpg"></img>
+			{{imageurl}}
+		</div>
+		<div id="dis">
+			{{placename}}
+		</div>
+	</div>
+</body>
+</html>
