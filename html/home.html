@@ -10,29 +10,116 @@
 <script type=text/javascript>
 	var quiz = angular.module('quiz', []);
 	
+	quiz.controller('starscontroller', function($scope) {
+		$scope.stars = [
+		{id:'1', state:'normal'}, 
+		{id:'2', state:'normal'}, 
+		{id:'3', state:'normal'}, 
+		{id:'4', state:'normal'}, 
+		{id:'5', state:'normal'},];
+		
+		$scope.starclicked = function(index) {
+			for(var x=1; x<=5; x++) {
+				if(x<=index) {
+					$scope.stars[x-1].state = 'clicked';
+					$('#'+x).children('img').attr('src', '../img/star.png');
+				} else {
+					$scope.stars[x-1].state = 'normal';
+					$('#'+x).children('img').attr('src', '../img/star-empty.png');
+				}
+			}
+		};
+		$scope.starmouseover = function(index) {
+			for(var x=1; x<=5; x++) {
+				if(x<=index) {
+					if($scope.stars[x-1].state!='clicked') {
+						$scope.stars[x-1].state = 'hover';
+						$('#'+x).children('img').attr('src', '../img/star-hover.png');
+					}
+				} else if ($scope.stars[x-1].state!='clicked')  {
+					$scope.stars[x-1].state = 'normal';
+					$('#'+x).children('img').attr('src', '../img/star-empty.png');
+				}
+			}
+		};
+		$scope.starmouseoff = function(index) {
+			for(var x=1; x<=5; x++) {
+				if($scope.stars[x-1].state=='hover') {
+					$scope.stars[x-1].state = 'normal';
+					$('#'+x).children('img').attr('src', '../img/star-empty.png');
+				}
+			}
+		};
+	});
 	quiz.controller('quizcontroller', function($scope, $http) {
 		$scope.placename = "";
 		$scope.starrating = 0;
 		$scope.imageurl = "";
+		$scope.images = ["", "", "", "", ""];
+		$scope.currentimageid = 0;
+		$scope.animating = false;
+		$scope.MAX_IMG = 5;
+		
+		$scope.slideright = function() {
+			if(!$scope.animating && $scope.currentimageid<$scope.MAX_IMG-1) {
+				$scope.animating=true;
+				$scope.currentimageid+=1;
+				$('.true').attr('src', $scope.images[$scope.currentimageid]);
+				
+				$('.false').animate({
+				opacity: 0.0,
+				left: "+=5%"
+				}, 750, function() {
+				$('.false').attr('src', $scope.images[$scope.currentimageid]);
+				$('.false').css({ "opacity": "100", "margin-left" : "auto", "margin-right" : "auto", "left" : "0"});
+				$scope.animating=false;
+				});
+			}
+		}
+		
+		$scope.slideleft = function() {
+			if(!$scope.animating && $scope.currentimageid>0) {
+				$scope.animating=true;
+				$scope.currentimageid-=1;
+				$('.true').attr('src', $scope.images[$scope.currentimageid]);
+				
+				$('.false').animate({
+				opacity: 0.0,
+				left: "-=5%"
+				}, 750, function() {
+				$('.false').attr('src', $scope.images[$scope.currentimageid]);
+				$('.false').css({ "opacity": "100", "margin-left" : "auto", "margin-right" : "auto", "left" : "0"});
+				$scope.animating=false;
+				});
+			}
+		}
 		
 		var area = "norwich";
 		$http.get('../php/getfoodratings.php?area=' + area).
 		success(function(data, status, headers, config) {
-			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].BusinessName;
-			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[0].RatingValue;
+			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[9].BusinessName;
+			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[9].RatingValue;
+			
+			$http.get("../php/getimages.php?submit=true&searchText="+$scope.placename).
+			success(function(data, status, headers, config) {
+				$scope.images[0]=data.d.results[0].MediaUrl; $scope.images[1]=data.d.results[1].MediaUrl; $scope.images[2]=data.d.results[2].MediaUrl; $scope.images[3]=data.d.results[3].MediaUrl;
+				$scope.images[4]=data.d.results[4].MediaUrl;
+				($scope.imageurl = $scope.images[0]);
+				var height=$('.true').height;
+				var width=$('.true').width;
+				var ratio=width/650
+				$('.true').css("width", 650);
+				$('.true').css("height", height * ratio);
+				$('.false').css("width", 650); 
+				$('.false').css("height", height * ratio);
+			}).
+			error(function(data, status, headers, config) {
+				alert("error: angularJS: $http.get call failed");
+			}); 
 		}).
 		error(function(data, status, headers, config) {
 			alert("error: angularJS: $http.get call failed");
 		});
-		/*
-		$http.get("../php/getimages.php?submit=true&search=xbox").
-		success(function(data1, status, headers, config) {
-			alert(data1.results[0].MediaUrl);
-			//alert($scope.imageurl = data1.d.results[0].MediaUrl);
-		}).
-		error(function(data1, status, headers, config) {
-			alert("error: angularJS: $http.get call failed");
-		}); */
 	});
 </script>
 
@@ -48,8 +135,17 @@
 			</form>
 		</div>
 		<div id="image_box">
-			<img src="http://blog.educastur.es/stocks/files/2010/12/topdown_xbox.jpg"></img>
-			{{imageurl}}
+			<div id="sidebutton" ng-click="slideleft()" style="float: left; margin-left: 12%"></div>
+			<div id="sidebutton" ng-click="slideright()" style="float: right; margin-right: 12%; background: url(../img/arrow2.png)"></div>
+			<div id="image_box_wrapper">
+			<img class="true" src={{imageurl}}></img>
+			<img class="false" src={{imageurl}}></img>
+			</div>
+		</div>
+		<div class="stars" ng-controller="starscontroller">
+		<header ng-repeat="star in stars">
+			<div class="star" id="{{star.id}}" ng-click="starclicked(star.id)" ng-mouseover="starmouseover(star.id)" ng-mouseleave="starmouseoff(star.id)"> <img src="../img/star-empty.png"; width="100"; height="100"></img> </div>
+		</header>
 		</div>
 		<div id="dis">
 			{{placename}}
