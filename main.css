@@ -1,20 +1,17 @@
 #container
 {
- border-style: solid;
- border-width: 5px;
- border-color: #000000;
  width: 100%;
  height: 100%;
- font-size: 50px;
- background-image: url("TempBackground.jpg");
- position: absolute;
+ background: url(../img/white.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  position: absolute;
 }
-#SearchBox
-{
-border: 0px;
-}
-form
-{
+#searchbox {
+left: 40%;
+position: relative;
 width: 500px;
 }
 .search 
@@ -36,6 +33,16 @@ border-color: #207cca;
 background-color: #207cca;
 color: #fafafa;
 }
+#sidebutton {
+	width: 20%;
+	height: 20%;
+	background: url(../img/arrow.png) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+	margin: auto auto;
+}
 .button:hover
 {
 background-color: #fafafa;
@@ -47,23 +54,30 @@ margin: 0px;
 }
 #image_box
 {
- border-style: solid;
- border-width: 5px;
- border-color: #000000;
  left: 15%;
  width: 70%;
  height: 50%;
  margin: 2% 0px 2% 0px;
- font-size: 50px;
  position: relative;
+}
+#image_box img{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 25px;
+	box-shadow: 10px 10px 5px #888888;
 }
 #dis
 {
- border-style: solid;
- border-width: 3px;
- border-color: #000000;
  width: 70%;
- height: 10%;
- font-size: 10px;
+ height: 30%;
+ text-align: center;
+ font-size: 400%;
+ font-weight: bold;
  margin: 0px 0px 0px 15%;
+ font-family: "Rounded";
+}
+@font-face {
+    font-family: "Rounded";
+    src: url("../font/Days.otf"); 
 }

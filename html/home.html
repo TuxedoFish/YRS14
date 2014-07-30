@@ -1,7 +1,8 @@
 <!doctype html>
 <head>
 	<title></title>
-	<link rel="stylesheet" type="text/css" href="../css/main.css" >  
+	<link rel="stylesheet" type="text/css" href="../css/main.css" >
+	<link rel="stylesheet" type="text/css" href="../css/stars.css">
 	<script src="../library/jquery-2.0.3.min.js"></script>
 	<script src="../library/jquery.transit.min.js"></script> 
 	<script src = "http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
@@ -147,6 +148,13 @@
 			<div class="star" id="{{star.id}}" ng-click="starclicked(star.id)" ng-mouseover="starmouseover(star.id)" ng-mouseleave="starmouseoff(star.id)"> <img src="../img/star-empty.png"; width="100"; height="100"></img> </div>
 		</header>
 		</div>
+		<div class="rating">
+    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">&#9734</label>
+    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">&#9734</label>
+    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">&#9734</label>
+    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">&#9734</label>
+    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">&#9734</label>
+</div>
 		<div id="dis">
 			{{placename}}
 		</div>
