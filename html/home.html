@@ -11,7 +11,15 @@
 <script type=text/javascript>
 	var quiz = angular.module('quiz', []);
 	
-	quiz.controller('starscontroller', function($scope) {
+	quiz.controller('quizcontroller', function($scope, $http) {
+		$scope.placename = "";
+		$scope.starrating = 0;
+		$scope.imageurl = "";
+		$scope.images = ["", "", "", "", ""];
+		$scope.currentimageid = 0;
+		$scope.animating = false;
+		$scope.MAX_IMG = 5;
+		
 		$scope.stars = [
 		{id:'1', state:'normal'}, 
 		{id:'2', state:'normal'}, 
@@ -20,14 +28,17 @@
 		{id:'5', state:'normal'},];
 		
 		$scope.starclicked = function(index) {
-			for(var x=1; x<=5; x++) {
-				if(x<=index) {
-					$scope.stars[x-1].state = 'clicked';
-					$('#'+x).children('img').attr('src', '../img/star.png');
-				} else {
-					$scope.stars[x-1].state = 'normal';
-					$('#'+x).children('img').attr('src', '../img/star-empty.png');
+			if($scope.starrating!="" && $scope.placename!="" && $scope.images[0] != "") {
+				for(var x=1; x<=5; x++) {
+					if(x<=index) {
+						$scope.stars[x-1].state = 'clicked';
+						$('#'+x).children('img').attr('src', '../img/star.png');
+					} else {
+						$scope.stars[x-1].state = 'normal';
+						$('#'+x).children('img').attr('src', '../img/star-empty.png');
+					}
 				}
+				$http.get("../php/adddata.php?realrating="+$scope.starrating+"&companyname="+$scope.placename+"&rating="+index);
 			}
 		};
 		$scope.starmouseover = function(index) {
@@ -51,15 +62,6 @@
 				}
 			}
 		};
-	});
-	quiz.controller('quizcontroller', function($scope, $http) {
-		$scope.placename = "";
-		$scope.starrating = 0;
-		$scope.imageurl = "";
-		$scope.images = ["", "", "", "", ""];
-		$scope.currentimageid = 0;
-		$scope.animating = false;
-		$scope.MAX_IMG = 5;
 		
 		$scope.slideright = function() {
 			if(!$scope.animating && $scope.currentimageid<$scope.MAX_IMG-1) {
@@ -95,13 +97,27 @@
 			}
 		}
 		
-		var area = "norwich";
+		var area = "london";
 		$http.get('../php/getfoodratings.php?area=' + area).
 		success(function(data, status, headers, config) {
-			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[9].BusinessName;
-			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[9].RatingValue;
+			var number = 0;
+			$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].BusinessName;
+			$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].RatingValue;
+			var businesstypes = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].BusinessType;
+			var address2 = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].AddressLine2;
+			var address3 = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].AddressLine3;
+			var address4 = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].AddressLine4;
+			var address = "";
+			if(address4!=null) {address=address4;} else if(address3!=null) {address=address3;} else if(address2!=null) {address=address2;}
+			var businesstype = businesstypes.split("/")[0];
+			$scope.placename.replace(/'/g, "");
 			
-			$http.get("../php/getimages.php?submit=true&searchText="+$scope.placename).
+			if(businesstype.indexOf("supermarket") != -1) {
+				alert ("oh dear");
+			}
+			
+			console.log("../php/getimages.php?submit=true&searchText="+$scope.placename+ " " + businesstype + " " + address);
+			$http.get("../php/getimages.php?submit=true&searchText="+$scope.placename+ " " + businesstype + " " + address).
 			success(function(data, status, headers, config) {
 				$scope.images[0]=data.d.results[0].MediaUrl; $scope.images[1]=data.d.results[1].MediaUrl; $scope.images[2]=data.d.results[2].MediaUrl; $scope.images[3]=data.d.results[3].MediaUrl;
 				$scope.images[4]=data.d.results[4].MediaUrl;
@@ -128,35 +144,32 @@
 	<!--contains the website within a box-->
 	<div id="container" ng-app="quiz" ng-controller="quizcontroller">
 		<!--- <img src=""></img -->
-		<div id="searchbox">
-			<form>
-				<!-- user search bar -->
-				<input class="search" type="text" placeholder="search...">
-				<input class="button" type="button" value="Search">
-			</form>
-		</div>
-		<div id="image_box">
-			<div id="sidebutton" ng-click="slideleft()" style="float: left; margin-left: 12%"></div>
-			<div id="sidebutton" ng-click="slideright()" style="float: right; margin-right: 12%; background: url(../img/arrow2.png)"></div>
-			<div id="image_box_wrapper">
-			<img class="true" src={{imageurl}}></img>
-			<img class="false" src={{imageurl}}></img>
+		<div id="topbar">
+			<div id="searchbox">
+				<form>
+					<!-- user search bar -->
+					<input class="search" type="text" placeholder="search...">
+					<input class="button" type="button" value="Search">
+				</form>
 			</div>
 		</div>
-		<div class="stars" ng-controller="starscontroller">
-		<header ng-repeat="star in stars">
-			<div class="star" id="{{star.id}}" ng-click="starclicked(star.id)" ng-mouseover="starmouseover(star.id)" ng-mouseleave="starmouseoff(star.id)"> <img src="../img/star-empty.png"; width="100"; height="100"></img> </div>
-		</header>
-		</div>
-		<div class="rating">
-    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">&#9734</label>
-    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">&#9734</label>
-    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">&#9734</label>
-    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">&#9734</label>
-    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">&#9734</label>
-</div>
-		<div id="dis">
-			{{placename}}
+		<div id="mainbody">
+			<div id="dis">
+				{{placename}}
+			</div>
+			<div id="image_box">
+				<div id="sidebutton" ng-click="slideleft()" style="float: left; margin-left: -14%"></div>
+				<div id="sidebutton" ng-click="slideright()" style="float: right; margin-right: -14%; background: url(../img/arrow2.png)"></div>
+				<div id="image_box_wrapper">
+				<img class="true" src={{imageurl}}></img>
+				<img class="false" src={{imageurl}}></img>
+				</div>
+			</div>
+			<div class="stars">
+			<header ng-repeat="star in stars">
+				<div class="star" id="{{star.id}}" ng-click="starclicked(star.id)" ng-mouseover="starmouseover(star.id)" ng-mouseleave="starmouseoff(star.id)"> <img src="../img/star-empty.png"; width="100"; height="100"></img> </div>
+			</header>
+			</div>
 		</div>
 	</div>
 </body>
