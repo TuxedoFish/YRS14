@@ -39,15 +39,9 @@ padding:8px 15px;
 background:rgba(50, 50, 50, 0.7);
 border: 0px;
 border-style: solid;
-<<<<<<< HEAD
-background-color: #1975FF;
-outline:none;
-border-radius: 15px 0px 0px 15px;
-=======
 border-color: #dbdbdb;
 border-top-left-radius:2em;
 border-bottom-left-radius:2em;
->>>>>>> 83faf0249aca35b6c61cfedecb93833b50d5b426
 }
 .button
 {
@@ -59,13 +53,9 @@ border-style: solid;
 border-color: #474747;
 background-color: #474747;
 color: #fafafa;
-<<<<<<< HEAD
-outline:none;
-border-radius: 0px 15px 15px 0px;
-=======
 border-top-right-radius:2em;
 border-bottom-right-radius:2em;
->>>>>>> 83faf0249aca35b6c61cfedecb93833b50d5b426
+
 }
 #sidebutton {
 	background: url(../img/arrow.png);
@@ -109,8 +99,6 @@ margin: 0px;
  margin: 2% 0px 2% 0px;
  position: relative;
 }
-<<<<<<< HEAD
-=======
 @media all and (max-width: 700px) {
 	#dis {
 		font-size: 200%;
@@ -170,7 +158,6 @@ margin: 0px;
 .false {
     z-index: 3;
 }
->>>>>>> 83faf0249aca35b6c61cfedecb93833b50d5b426
 #dis
 {
  width: 70%;
