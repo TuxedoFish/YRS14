@@ -9,6 +9,10 @@
   background-size: cover;
   position: absolute;
 }
+form
+{
+ margin: 3% 0% 0% 0%;
+}
 #searchbox {
 left: 40%;
 position: relative;
@@ -20,7 +24,9 @@ padding:8px 15px;
 background:rgba(50, 50, 50, 0.7);
 border: 0px;
 border-style: solid;
-border-color: #dbdbdb;
+background-color: #1975FF;
+outline:none;
+border-radius: 15px 0px 0px 15px;
 }
 .button
 {
@@ -29,9 +35,11 @@ padding: 6px 15px;
 left: -8px;
 border-width: 2px;
 border-style: solid;
-border-color: #207cca;
-background-color: #207cca;
+border-color: #474747;
+background-color: #474747;
 color: #fafafa;
+outline:none;
+border-radius: 0px 15px 15px 0px;
 }
 #sidebutton {
 	width: 20%;
@@ -45,8 +53,9 @@ color: #fafafa;
 }
 .button:hover
 {
-background-color: #fafafa;
-color: 207cca;
+background-color: #ffffff;
+color: #474747;
+cursor: pointer;
 }
 body
 {
