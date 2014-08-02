@@ -13,56 +13,14 @@
 	
 	quiz.controller('quizcontroller', function($scope, $http) {
 		$scope.placename = "HELP";
-		$scope.starrating = 0;
-		$scope.imageurl = "../img/help.png";
+		$scope.imageurl = "../img/help2.png";
+		$scope.starrating = [];
+		$scope.userstarrating = [];
 		$scope.images = ["", "", "", "", ""];
 		$scope.currentimageid = 0;
 		$scope.animating = false;
 		$scope.MAX_IMG = 5;
-		$scope.searchQuery = "norwich";
-		
-		$scope.stars = [
-		{id:'1', state:'normal'}, 
-		{id:'2', state:'normal'}, 
-		{id:'3', state:'normal'}, 
-		{id:'4', state:'normal'}, 
-		{id:'5', state:'normal'},];
-		
-		$scope.starclicked = function(index) {
-			if($scope.starrating!="" && $scope.placename!="" && $scope.images[0] != "") {
-				for(var x=1; x<=5; x++) {
-					if(x<=index) {
-						$scope.stars[x-1].state = 'clicked';
-						$('#'+x).children('img').attr('src', '../img/star.png');
-					} else {
-						$scope.stars[x-1].state = 'normal';
-						$('#'+x).children('img').attr('src', '../img/star-empty.png');
-					}
-				}
-				$http.get("../php/adddata.php?realrating="+$scope.starrating+"&companyname="+$scope.placename+"&rating="+index);
-			}
-		};
-		$scope.starmouseover = function(index) {
-			for(var x=1; x<=5; x++) {
-				if(x<=index) {
-					if($scope.stars[x-1].state!='clicked') {
-						$scope.stars[x-1].state = 'hover';
-						$('#'+x).children('img').attr('src', '../img/star-hover.png');
-					}
-				} else if ($scope.stars[x-1].state!='clicked')  {
-					$scope.stars[x-1].state = 'normal';
-					$('#'+x).children('img').attr('src', '../img/star-empty.png');
-				}
-			}
-		};
-		$scope.starmouseoff = function(index) {
-			for(var x=1; x<=5; x++) {
-				if($scope.stars[x-1].state=='hover') {
-					$scope.stars[x-1].state = 'normal';
-					$('#'+x).children('img').attr('src', '../img/star-empty.png');
-				}
-			}
-		};
+		$scope.averagerating = 0;
 		
 		$scope.slideright = function() {
 			if(!$scope.animating && $scope.currentimageid<$scope.MAX_IMG-1) {
@@ -105,11 +63,15 @@
 		}
 		
 		$scope.refreshimages = function(searchQuery) {
+			var area = "london";
 			$http.get('../php/getfoodratings.php?area=' + searchQuery).
 			success(function(data, status, headers, config) {
 				var number = 5;
 				$scope.placename = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].BusinessName;
-				$scope.starrating = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].RatingValue;
+				var stars = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].RatingValue;
+				for(var x=0; x<stars; x++) {
+					$scope.starrating.push("1");
+				}
 				var businesstypes = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].BusinessType;
 				var address2 = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].AddressLine2;
 				var address3 = data.FHRSEstablishment.EstablishmentCollection.EstablishmentDetail[number].AddressLine3;
@@ -123,13 +85,25 @@
 					alert ("oh dear");
 				}
 				
+				$http.get('../php/getdata.php?companyname=' + $scope.placename).
+				success(function(data, status, headers, config) {
+					var fdata = data.split(" <br />"); 
+					var total = 0;
+					for(var y=0; y<fdata.length-1; y++) {total=total+parseInt(fdata[y]);}
+					var userrate = total/fdata.length;
+					userrate = Math.round(userrate);
+					for(var x=0; x<userrate; x++) {
+					$scope.userstarrating.push("1");
+					}
+				}).
+				error(function(data, status, headers, config) {
+					alert("error: angularJS: $http.get call failed");
+				}); 
+				
 				$http.get("../php/getimages.php?submit=true&searchText="+$scope.placename).
 				success(function(data, status, headers, config) {
 					$scope.images[0]=data.d.results[0].MediaUrl; $scope.images[1]=data.d.results[1].MediaUrl; $scope.images[2]=data.d.results[2].MediaUrl; $scope.images[3]=data.d.results[3].MediaUrl;
 					$scope.images[4]=data.d.results[4].MediaUrl;
-					for(var x=0; x<5; x++) {
-						console.log(data.d.results[x].MediaUrl);
-					}
 					($scope.imageurl = $scope.images[0]);
 				}).
 				error(function(data, status, headers, config) {
@@ -149,9 +123,9 @@
 		<!--- <img src=""></img -->
 		<div id="topbar">
 			<div id="pagelink">
-			<a href="/YRS14/YRS14/html/reviewpage.html">RATE IT!</a>
+			<a href="/YRS14/YRS14/html/home.html">VIEW IT!
+			</a>
 			</div>
-			
 			<div id="searchbox">
 				<form>
 					<!-- user search bar -->
@@ -172,10 +146,17 @@
 				<img class="false" src={{imageurl}}></img>
 				</div>
 			</div>
-			<div class="stars">
-			<header ng-repeat="star in stars">
-				<div class="star" id="{{star.id}}" ng-click="starclicked(star.id)" ng-mouseover="starmouseover(star.id)" ng-mouseleave="starmouseoff(star.id)"> <img src="../img/star-empty.png"></img> </div>
-			</header>
+			<div id="showbox">
+				REAL RATING
+				<div class="mini-stars">
+				<img ng-repeat="star in starrating" src="../img/mini-star.png"></img>
+				</div>
+			</div>
+			<div id="showbox">
+				USER RATING
+				<div class="mini-stars" style="float: right">
+				<img ng-repeat="star in userstarrating" src="../img/mini-star.png" style="float: left"></img>
+				</div>
 			</div>
 		</div>
 	</div>
