@@ -5,6 +5,10 @@
   position: absolute;
   background-color: #CCCCCC;
 }
+form
+{
+ margin: 3% 0% 0% 0%;
+}
 #searchbox {
 top: 25%;
 left: 40%;
@@ -56,11 +60,12 @@ padding: 6px 15px;
 left: -8px;
 border-width: 2px;
 border-style: solid;
-border-color: #207cca;
-background-color: #207cca;
+border-color: #474747;
+background-color: #474747;
 color: #fafafa;
 border-top-right-radius:2em;
 border-bottom-right-radius:2em;
+
 }
 #sidebutton {
 	margin: auto 0;
@@ -74,8 +79,9 @@ border-bottom-right-radius:2em;
 }
 .button:hover
 {
-background-color: #fafafa;
-color: 207cca;
+background-color: #ffffff;
+color: #474747;
+cursor: pointer;
 }
 .star {
 	width: 15%;

@@ -3,16 +3,16 @@
  border-style: solid;
  border-width: 5px;
  border-color: #000000;
- width: auto;
- height: auto;
- font-size; 50px;
+ width: 100%;
+ height: 100%;
 }
 #pic
 {
+border: url("../img/happy.png");
  border-style: solid;
  border-width: 5px;
  border-color: #000000;
- width: 400px;
+ width: 360px;
  height: 400px;
  margin: 200px 200px 10px 34.5%;
  font-size; 50px;
@@ -36,4 +36,11 @@
  height: 50px;
  margin: 2px 2px 10px 26.5%;
  font-size; 50px;
+ padding:8px 15px;
+background:rgba(50, 50, 50, 0.7);
+border: 0px;
+border-style: solid;
+background-color: #1975FF;
+outline:none;
+border-radius: 15px 15px 15px 15px;
 }
